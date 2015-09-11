@@ -5,6 +5,10 @@ This utility scrubs the environment variables for variables that begin with `BP_
 
 The resultant JSON structure is POSTed to the URL `http://127.0.0.1/api/v1/hook/<name>` where `<name>` is replaced with the name of the executable being invoked, i.e. `southbound-update` would results in a post to `http://127.0.0.1/api/v1/hook/southbound-update`.
 
+> Note: The use of this hook implies that the hook and application REST interfaces are responsive to calls from the platform. This may not be the case, i.e. BP starts a service and a consumer of that service, it then attempts to update the consumer of the service with connectivity information to the service, if that call executes the hook which attempts to connect to the consumer via REST and that REST call fails because the consumer is not yet listening on the REST interface then things are broken.
+
+> It appears that a common solution to this is tha the hook script writes to the local file system and the consumer essentially reads those updates. This is a poor man's persistent message queue, but it addresses the issue of dependency injection after the fact, which is the issue at the core.
+
 ### Usage
 To use this utility copy the executable into you `/bp2/hooks` directory within your docker container. Then symbolically link this file to the various BluePlanet hooks for which you would like to use it. For example, to use this for the southbound-update hook you would issue a command similar to
 
