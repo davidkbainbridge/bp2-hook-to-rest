@@ -17,8 +17,10 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -157,6 +159,12 @@ func main() {
 				if (int)(resp.StatusCode/100) != 2 {
 					log.Fatalf("ERROR: Unsuccessful response code for POST to URL '%s', received '%s'\n", targetURL, resp.Status)
 				}
+				// Good response, so display any data that the REST call returned as this will be the output of the
+				// hook
+				defer resp.Body.Close()
+				buf := new(bytes.Buffer)
+				buf.ReadFrom(resp.Body)
+				fmt.Println(buf.String())
 			}
 		}
 	}
